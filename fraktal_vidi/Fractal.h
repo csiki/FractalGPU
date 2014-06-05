@@ -38,9 +38,27 @@ void drawOnConsole(HDC console, const COLORREF* colormap, int width, int height)
 	}
 }
 
-void drawPartOnConsole(HDC console, int fromx, int fromy, int tox, int toy)
+void drawOnConsoleParalell(HDC console, const COLORREF* colormap, int width, int height)
 {
-	// TODO
+	// create drawer threads
+	size_t threadnum = std::thread::hardware_concurrency();
+	std::vector<std::thread> threads(threadnum);
+
+	size_t i = 0;
+	for (auto& t : threads)
+	{
+		t = std::thread(drawPartOnConsole, colormap, i * width * height, width, height);
+		++i;
+	}
+
+	// TODO join
+	for (auto& t : threads)
+		t.join();
+}
+
+void drawPartOnConsole(HDC console, const COLORREF* colormap, int from, int width, int height)
+{
+	// TODO figyelj hogy mennyi marad hátra
 }
 
 template <typename FractalType>
@@ -71,16 +89,13 @@ void drawFractal(double FPS, int endtime, int width, int height)
 	// copy back colormaps to host
 	auto colormaps = new COLORREF[width * height * endtime];
 	cudaMemcpy(colormaps, dev_colormaps, width * height * endtime * sizeof(COLORREF), cudaMemcpyDeviceToHost);
-	
-	// create drawer threads
-	std::vector<std::thread> threads(std::thread::hardware_concurrency());
-	// TODO start threads with different parts of 'image'
 
 	// draw on console
-	std::chrono::duration<int, std::ratio<1,1000>> time_between_frames ( (int) (1000.0 / FPS));
+	std::chrono::duration<int, std::ratio<1,1000>> time_between_frames ( (int) (1000.0 / FPS) );
 	for (int frame = 0; frame < endtime; ++frame)
 	{
 		drawOnConsole(dc, colormaps + frame * width * height, width, height);
+		// drawOnConsoleParalell(dc, colormaps + frame * width * height, width, height);
 		std::this_thread::sleep_for( time_between_frames );
 	}
 

@@ -8,8 +8,19 @@
 #include "Fractal.h"
 #include "CsikiFractal.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-    drawFractal<CsikiFractal> (24, 20, 400, 500);
+	if (argc == 5)
+	{
+		int fps = atoi(argv[1]);
+		int frames = atoi(argv[2]);
+		int width = atoi(argv[3]);
+		int height = atoi(argv[4]);
+
+		drawFractal<CsikiFractal> (fps, frames, width, height);
+	}
+	else
+		drawFractal<CsikiFractal> (24, 200, 400, 400);
+
     return 0;
 }
