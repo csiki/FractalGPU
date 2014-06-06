@@ -1,10 +1,10 @@
-﻿Build started 2014.06.06. 16:01:57.
+﻿Build started 2014.06.06. 16:26:01.
      1>Project "f:\CSIKI\PROGRAMING\C++\misc\fraktal_vidi\fraktal_vidi\fraktal_vidi.vcxproj" on node 2 (Build target(s)).
      1>AddCudaCompileDeps:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /DWIN32 /D_DEBUG /D_CONSOLE /D_MBCS /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include" /I. /FIcuda_runtime.h /c f:\CSIKI\PROGRAMING\C++\misc\fraktal_vidi\fraktal_vidi\kernel.cu 
        CudaBuild:
          Compiling CUDA source file kernel.cu...
-         cmd.exe /C "C:\Users\Viktor\AppData\Local\Temp\tmpcaa11fe6562e462abcee0f228534b9a0.cmd"
+         cmd.exe /C "C:\Users\Viktor\AppData\Local\Temp\tmp96594eb60a8c497fae5028de8ea3c23b.cmd"
          "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\nvcc.exe" -gencode=arch=compute_10,code=\"sm_10,compute_10\" --use-local-env --cl-version 2012 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin"  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd  " -o Debug\kernel.cu.obj "f:\CSIKI\PROGRAMING\C++\misc\fraktal_vidi\fraktal_vidi\kernel.cu"
          
          f:\CSIKI\PROGRAMING\C++\misc\fraktal_vidi\fraktal_vidi>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\bin\nvcc.exe" -gencode=arch=compute_10,code=\"sm_10,compute_10\" --use-local-env --cl-version 2012 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin"  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd  " -o Debug\kernel.cu.obj "f:\CSIKI\PROGRAMING\C++\misc\fraktal_vidi\fraktal_vidi\kernel.cu" 
@@ -23,4 +23,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:13.44
+Time Elapsed 00:00:13.32

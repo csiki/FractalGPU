@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 			drawFractal<CsikiFractal<200>> (fps, frames, width, height);
 		}
 		else
-			drawFractal<CsikiFractal<>> (24, 50, 200, 200);
+			drawFractal<CsikiFractal<200, 2>> (24, 50, 200, 200);
 	}
 	catch (std::runtime_error& e)
 	{
