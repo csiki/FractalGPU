@@ -611,6 +611,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\device_launch_parameters.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iterator
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vector
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\chrono
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ratio
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdint.h
@@ -627,7 +628,26 @@ C:\Program Files (x86)\Windows Kits\8.0\Include\shared\guiddef.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\thr/xthread
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\thr/xtime
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\thr/xthreads.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vector
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\atomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\assert.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xatomic.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xxatomic
 f:\csiki\programing\c++\misc\fraktal_vidi\fraktal_vidi\CsikiFractal.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\device_launch_parameters.h

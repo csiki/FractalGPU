@@ -7,58 +7,102 @@
 #include <windows.h>
 #include <type_traits>
 #include <string>
+#include <vector>
 #include <chrono>
 #include <thread>
-#include <vector>
+#include <atomic>
+
+struct cuComplex {
+	
+	__device__ cuComplex( float a, float b ) : r(a), i(b) {}
+	__device__ ~cuComplex() {}
+	
+	__device__ float magnitude( void ) {
+		return r * r + i * i;
+	}
+
+	__device__ cuComplex operator*(const cuComplex& a) {
+		return cuComplex(r * a.r - i * a.i, i * a.r + r * a.i);
+	}
+
+	__device__ cuComplex operator+(const cuComplex& a) {
+		return cuComplex(r + a.r, i + a.i);
+	}
+
+	float r;
+	float i;
+};
+
+struct Vec
+{
+	Vec() : x(0), y(0) {}
+	Vec(int x_, int y_) : x(x_), y(y_) {}
+
+	int x;
+	int y;
+};
 
 class Fractal
 {
+public:
 	// gets x, y (pos) and t(ime) parameters through CUDA
-	__device__ virtual COLORREF* draw(int x, int y, int t) = 0;
+	__device__ virtual COLORREF operator()(int width, int height, int x, int y, int t) = 0;
 };
 
-
+// TODO rename 'draw' functions
 template <typename FractalType>
 __global__ void drawKernel(COLORREF* colormap)
 {
-	FractalType f; // TODO
+	FractalType f;
 	int index = gridDim.x * gridDim.y * threadIdx.x
 		+ gridDim.x * blockIdx.y + blockIdx.x;
-	colormap[index] = RGB(blockIdx.y * threadIdx.x % 256, blockIdx.x * threadIdx.x % 256, threadIdx.x % 256);
+	colormap[index] = f(gridDim.x, gridDim.y, blockIdx.x, blockIdx.y, threadIdx.x);
 }
 
-void drawOnConsole(HDC console, const COLORREF* colormap, int width, int height)
+void drawOnConsole(HDC console, const COLORREF* colormap, Vec size)
 {
-	for (int y = 0; y < height; ++y)
+	for (int y = 0; y < size.y; ++y)
 	{
-		for (int x = 0; x < width; ++x)
+		for (int x = 0; x < size.x; ++x)
 		{
-			SetPixel(console, x, y, colormap[x + y * width]);
+			SetPixel(console, x, y, colormap[x + y * size.x]);
 		}
 	}
 }
 
-void drawOnConsoleParalell(HDC console, const COLORREF* colormap, int width, int height)
+std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
+
+void drawPartOnConsole(HWND console, const COLORREF* colormap, Vec from, Vec size, int origwidth)
+{
+	HDC dc = GetDC(console); // different device handlers for different threads
+	for (int y = 0; y < size.y; ++y)
+	{
+		for (int x = 0; x < size.x; ++x)
+		{
+			SetPixel(dc, from.x + x, from.y + y, colormap[(from.x + x) + (y + from.y) * origwidth]);
+		}
+	}
+	ReleaseDC(console, dc);
+}
+
+void drawOnConsoleParallel(HWND console, const COLORREF* colormap, Vec size)
 {
 	// create drawer threads
-	size_t threadnum = std::thread::hardware_concurrency();
+	auto threadnum = std::thread::hardware_concurrency();
 	std::vector<std::thread> threads(threadnum);
-
+	
 	size_t i = 0;
+	size.y /= threadnum; // divide height by num of threads
 	for (auto& t : threads)
 	{
-		t = std::thread(drawPartOnConsole, colormap, i * width * height, width, height);
+		Vec tmpfrom(0, i * size.y);
+		t = std::thread(drawPartOnConsole, console, colormap, tmpfrom, size, size.x);
 		++i;
 	}
 
-	// TODO join
+	// join
 	for (auto& t : threads)
 		t.join();
-}
-
-void drawPartOnConsole(HDC console, const COLORREF* colormap, int from, int width, int height)
-{
-	// TODO figyelj hogy mennyi marad hátra
 }
 
 template <typename FractalType>
@@ -74,12 +118,10 @@ void drawFractal(double FPS, int endtime, int width, int height)
 
 	// get console handler
 	HWND console = GetConsoleWindow();
-	HDC dc = GetDC(console);
 
 	// malloc on device
 	COLORREF* dev_colormaps = nullptr;
 	cudaMalloc((void**)&dev_colormaps, width * height * endtime * sizeof(COLORREF));
-	// FIXME mallocPitch http://stackoverflow.com/questions/5029920/how-to-use-2d-arrays-in-cuda
 
 	// run kernel
 	dim3 blocks(width, height);
@@ -91,12 +133,19 @@ void drawFractal(double FPS, int endtime, int width, int height)
 	cudaMemcpy(colormaps, dev_colormaps, width * height * endtime * sizeof(COLORREF), cudaMemcpyDeviceToHost);
 
 	// draw on console
+	Vec size(width, height);
 	std::chrono::duration<int, std::ratio<1,1000>> time_between_frames ( (int) (1000.0 / FPS) );
 	for (int frame = 0; frame < endtime; ++frame)
 	{
-		drawOnConsole(dc, colormaps + frame * width * height, width, height);
-		// drawOnConsoleParalell(dc, colormaps + frame * width * height, width, height);
-		std::this_thread::sleep_for( time_between_frames );
+		auto drawtime_start = std::chrono::steady_clock::now();
+		drawOnConsoleParallel(console, colormaps + frame * width * height, size);
+		auto drawtime_end = std::chrono::steady_clock::now();
+
+		// sleep taking the drawing into account
+		std::chrono::duration<int, std::ratio<1,1000>> sleep_time =
+			time_between_frames - std::chrono::duration_cast<std::chrono::milliseconds>(drawtime_end - drawtime_start);
+		if (sleep_time.count() > 0)
+			std::this_thread::sleep_for( sleep_time );
 	}
 
 	// free all
