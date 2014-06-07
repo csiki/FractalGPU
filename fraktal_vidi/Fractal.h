@@ -10,8 +10,9 @@
 #include <vector>
 #include <chrono>
 #include <thread>
-#include <atomic>
 
+/* Complex number storage class.
+*/
 struct cuComplex {
 	
 	__device__ cuComplex( float a, float b ) : r(a), i(b) {}
@@ -33,6 +34,8 @@ struct cuComplex {
 	float i;
 };
 
+/* 2D vector.
+*/
 struct Vec
 {
 	Vec() : x(0), y(0) {}
@@ -42,16 +45,18 @@ struct Vec
 	int y;
 };
 
+/* Abstract base class of fractals.
+*/
 class Fractal
 {
 public:
-	// gets x, y (pos) and t(ime) parameters through CUDA
 	__device__ virtual COLORREF operator()(int width, int height, int x, int y, int t) = 0;
 };
 
-// TODO rename 'draw' functions
+/* CUDA kernel function, runs on GPU, calls FractalType() for calculating color.
+*/
 template <typename FractalType>
-__global__ void drawKernel(COLORREF* colormap)
+__global__ void calcKernel(COLORREF* colormap)
 {
 	FractalType f;
 	int index = gridDim.x * gridDim.y * threadIdx.x
@@ -59,19 +64,8 @@ __global__ void drawKernel(COLORREF* colormap)
 	colormap[index] = f(gridDim.x, gridDim.y, blockIdx.x, blockIdx.y, threadIdx.x);
 }
 
-void drawOnConsole(HDC console, const COLORREF* colormap, Vec size)
-{
-	for (int y = 0; y < size.y; ++y)
-	{
-		for (int x = 0; x < size.x; ++x)
-		{
-			SetPixel(console, x, y, colormap[x + y * size.x]);
-		}
-	}
-}
-
-std::atomic_flag spinlock = ATOMIC_FLAG_INIT;
-
+/* Draws a part of the fractal on console. Threads run on this function.
+*/
 void drawPartOnConsole(HWND console, const COLORREF* colormap, Vec from, Vec size, int origwidth)
 {
 	HDC dc = GetDC(console); // different device handlers for different threads
@@ -79,16 +73,18 @@ void drawPartOnConsole(HWND console, const COLORREF* colormap, Vec from, Vec siz
 	{
 		for (int x = 0; x < size.x; ++x)
 		{
-			SetPixel(dc, from.x + x, from.y + y, colormap[(from.x + x) + (y + from.y) * origwidth]);
+			SetPixel(dc, from.x + x, from.y + y, colormap[(from.x + x) + (from.y + y) * origwidth]);
 		}
 	}
 	ReleaseDC(console, dc);
 }
 
+/* Starts multiple threads for drawing different parts of the fractal.
+*/
 void drawOnConsoleParallel(HWND console, const COLORREF* colormap, Vec size)
 {
 	// create drawer threads
-	auto threadnum = std::thread::hardware_concurrency();
+	auto threadnum = 4 * std::thread::hardware_concurrency();
 	std::vector<std::thread> threads(threadnum);
 	
 	size_t i = 0;
@@ -105,8 +101,25 @@ void drawOnConsoleParallel(HWND console, const COLORREF* colormap, Vec size)
 		t.join();
 }
 
+/* DEPRICATED - Draws the whole fractal; single threaded.
+*/
+/*
+void drawOnConsole(HDC console, const COLORREF* colormap, Vec size)
+{
+	for (int y = 0; y < size.y; ++y)
+	{
+		for (int x = 0; x < size.x; ++x)
+		{
+			SetPixel(console, x, y, colormap[x + y * size.x]);
+		}
+	}
+}
+*/
+
+/* Main function for drawing fractal videos.
+*/
 template <typename FractalType>
-void drawFractal(double FPS, int endtime, int width, int height)
+void playFractalVideo(double FPS, int endtime, int width, int height)
 {
 	// check for type safety
 	if (!std::is_base_of<Fractal, FractalType>::value)
@@ -125,7 +138,7 @@ void drawFractal(double FPS, int endtime, int width, int height)
 
 	// run kernel
 	dim3 blocks(width, height);
-	drawKernel<FractalType><<<blocks, endtime>>>(dev_colormaps);
+	calcKernel<FractalType><<<blocks, endtime>>>(dev_colormaps);
 	cudaDeviceSynchronize();
 
 	// copy back colormaps to host
