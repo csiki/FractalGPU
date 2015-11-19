@@ -101,20 +101,10 @@ void drawOnConsoleParallel(HWND console, const COLORREF* colormap, Vec size)
 		t.join();
 }
 
-/* DEPRICATED - Draws the whole fractal; single threaded.
-*/
-/*
-void drawOnConsole(HDC console, const COLORREF* colormap, Vec size)
+void drawOpenGL()
 {
-	for (int y = 0; y < size.y; ++y)
-	{
-		for (int x = 0; x < size.x; ++x)
-		{
-			SetPixel(console, x, y, colormap[x + y * size.x]);
-		}
-	}
+	// TODO
 }
-*/
 
 /* Main function for drawing fractal videos.
 */
